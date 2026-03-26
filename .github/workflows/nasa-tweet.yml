@@ -2,8 +2,11 @@ name: NASA APOD Tweet
 
 on:
   schedule:
-    - cron: "0 7 * * *"  # every day at 7am UTC (12:30pm IST)
+    - cron: "0 7 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   tweet:
@@ -17,31 +20,44 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
         run: |
-          pip install tweepy requests --quiet
+          pip install requests requests-oauthlib --quiet
 
           python3 << 'EOF'
-          import requests, tweepy, textwrap
+          import os, requests, textwrap
+          from requests_oauthlib import OAuth1
 
           # Fetch NASA APOD
-          res = requests.get(f"https://api.nasa.gov/planetary/apod?api_key={__import__('os').environ['NASA_API_KEY']}").json()
+          res = requests.get(
+            "https://api.nasa.gov/planetary/apod",
+            params={"api_key": os.environ["NASA_API_KEY"]}
+          ).json()
 
           title = res.get("title", "")
           explanation = res.get("explanation", "")
           url = res.get("url", "")
-          date = res.get("date", "")
 
-          # Build tweet
-          short_exp = textwrap.shorten(explanation, width=180, placeholder="...")
-          tweet = f"🔭 {title}\n\n{short_exp}\n\n🌌 {url}\n\n#Astronomy #Space #APOD #NASA"
+          short_exp = textwrap.shorten(explanation, width=160, placeholder="...")
+          tweet = f"🔭 {title}\n\n{short_exp}\n\n🌌 {url}\n\n#Astronomy #Space #NASA #APOD"
 
-          # Post to X
-          import os
-          client = tweepy.Client(
-            consumer_key=os.environ['TWITTER_API_KEY'],
-            consumer_secret=os.environ['TWITTER_API_SECRET'],
-            access_token=os.environ['TWITTER_ACCESS_TOKEN'],
-            access_token_secret=os.environ['TWITTER_ACCESS_SECRET']
+          # Post via OAuth 1.0a directly
+          auth = OAuth1(
+            os.environ["TWITTER_API_KEY"],
+            os.environ["TWITTER_API_SECRET"],
+            os.environ["TWITTER_ACCESS_TOKEN"],
+            os.environ["TWITTER_ACCESS_SECRET"]
           )
-          client.create_tweet(text=tweet[:280])
-          print(f"✅ Tweeted: {title}")
+
+          response = requests.post(
+            "https://api.twitter.com/2/tweets",
+            json={"text": tweet[:280]},
+            auth=auth
+          )
+
+          print(f"Status: {response.status_code}")
+          print(response.json())
+
+          if response.status_code == 201:
+            print(f"✅ Tweeted: {title}")
+          else:
+            raise Exception(f"Failed: {response.text}")
           EOF
