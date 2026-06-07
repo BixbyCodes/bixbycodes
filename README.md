@@ -41,9 +41,10 @@
 ---
 
 ### Timeline
-2026  ·  Placement prep —LeetCode, aptitude handbooks
-2025  ·  MERN projects — GreenCart, JWT auth API, client sites, 100 Days in Public
-
+2025  ·  Placement prep — NeetCode 250, AMCAT, aptitude handbooks, 30+ articles
+2024  ·  MERN projects — GreenCart, JWT auth API, client sites, 100 Days in Public
+2023  ·  First freelance clients — Home Square, Red Voltas, Amazon Clone, Wanderlust
+2023  ·  Started ABES CS — AKTU · Ghaziabad
 
 ---
 
