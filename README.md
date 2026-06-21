@@ -89,7 +89,7 @@
 
 ### 🏆 Hackathons
 
-**HackerRank Orchestrate** · 2025
+**HackerRank Orchestrate** · 2026
 Built **MMRE (Multi-Modal Evidence Review) Pipeline** — an AI system that verifies insurance damage claims by analyzing submitted images across cars, laptops, and packages. Implemented fraud detection (stock photo identification, toy object detection), prompt-injection defense, and multilingual claim handling (English, Hindi, Spanish, Chinese). Staged pipeline: injection detection → user risk lookup → vision analysis → deterministic post-processing.
 
 ---
